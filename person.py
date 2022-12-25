@@ -4,6 +4,7 @@ from typing import Dict, List, Tuple, Union
 import pandas as pd
 import numpy as np
 from functools import partial
+from scipy.spatial.distance import cosine
 
 class Identification(Enum):
     MAN = "MAN"
@@ -60,7 +61,7 @@ class Person:
         Returns the similarity between the two people based on their matrix
         """
         if self==other:
-            return -1.0
+            return 0.0
 
         common_keys = set(self.matrix.keys()).intersection(set(other.matrix.keys()))
         if len(common_keys) == 0:
@@ -69,7 +70,8 @@ class Person:
         vector1 = np.array([self.matrix[k] for k in common_keys])
         vector2 = np.array([other.matrix[k] for k in common_keys])
 
-        return np.linalg.norm(vector1 - vector2)
+        # return np.linalg.norm(vector1 - vector2)
+        return 1 - cosine(vector1, vector2)
 
     def is_pairable(self, other:'Person')->bool:
         """
@@ -90,6 +92,12 @@ class Person:
         constraints = [self._gender_seeking_constraint, self._day_preference_constraint]
 
         return all(map(constraint, constraints))
+
+    def is_pairing_preferred(self, other:'Person')->bool:
+        """
+        Returns True if the two people are preferred to be paired
+        This defines soft constraints that are preferred to be satisfied
+        """
 
     def _gender_seeking_constraint(self, other:'Person')->bool:
         """

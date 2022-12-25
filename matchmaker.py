@@ -39,7 +39,7 @@ class MatchMaker:
             variables_for_person = self.match_tracker.get_variables_for_person(idx)
             self.prob += lpSum(variables_for_person) == 1
 
-        # add constraint that each pair in x is pairable
+        # Add constraint that each pair in x is pairable
         for variable, person1, person2 in self.match_tracker.get_variables_to_people():
             self.prob += variable <= person1.is_pairable(person2)
 
@@ -59,16 +59,24 @@ class MatchMaker:
             if person1 != person2:
                 num_matches += 2
 
-        logging.info(f"Scores: {scores}")
+        # format the scores to 2 decimal places
+        logging.info(f"Scores: {np.round(scores, 2)}")
 
-        self.deal_with_matches()
+
+        self.log_matches()
 
         print("Number of matches:", num_matches)
         print("Number of people not matched:", len(self.persons) - num_matches)
 
-    def deal_with_matches(self):
-        for var in self.match_tracker.get_true_variables():
-            print(var.name)
+    def log_matches(self):
+        unmatched = []
+        for idx1, idx2 in self.match_tracker.get_true_possible_matches():
+            if idx1 == idx2:
+                unmatched.append(idx1)
+            else:
+                print(f"{idx1} - {idx2}")
+        
+        print("Unmatched:", unmatched)
 
 
 
@@ -92,16 +100,16 @@ class MatchTracker:
 
     # get variables which are set to True
     def get_true_variables(self) -> List[LpVariable]:
-        return [self.variables[possible_match] for possible_match in self._get_true_possible_matches()]
+        return [self.variables[possible_match] for possible_match in self.get_true_possible_matches()]
 
     # return list of pairs of persons that are matched
     def get_matches(self) -> List[Tuple[Person, Person]]:
         return [
             (self.persons[possible_match[0]], self.persons[possible_match[1]])
-            for possible_match in self._get_true_possible_matches()
+            for possible_match in self.get_true_possible_matches()
         ]
 
-    def _get_true_possible_matches(self) -> List[Tuple[int, int]]:
+    def get_true_possible_matches(self) -> List[Tuple[int, int]]:
         return [
             possible_match for possible_match in self.possible_matches if self.variables[possible_match].varValue > 0
         ]
