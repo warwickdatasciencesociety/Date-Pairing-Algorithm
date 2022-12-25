@@ -3,6 +3,7 @@ from enum import Enum
 from typing import Dict, List, Tuple, Union
 import pandas as pd
 import numpy as np
+from functools import partial
 
 class Identification(Enum):
     MAN = "MAN"
@@ -14,6 +15,7 @@ class Identification(Enum):
     def from_string(cls:'Identification', s: str)->'Identification':
         s = s.upper()
 
+        # TODO: move to configs
         gender_map = {
             cls.ANY: ["NON-BINARY", "EVERYONE", "ANYONE", "ANY", "ALL"],
             cls.WOMAN: ["WOMAN", "WOMEN"],
@@ -72,19 +74,33 @@ class Person:
     def is_pairable(self, other:'Person')->bool:
         """
         Returns True if the two people are pairable
+        This defines hard constraints that must be satisfied
 
         A person is pairable if:
-        They are seeking each others' gender
+            Allow pairing with self
+            They are seeking each others' gender
+            They can meet on the same day
         """
         if self==other:
             return True
         
+        def constraint(func):
+            return partial(func, other)
+
+        constraints = [self._gender_seeking_constraint, self._day_preference_constraint]
+
+        return all(map(constraint, constraints))
+
+    def _gender_seeking_constraint(self, other:'Person')->bool:
+        """
+        Returns True if the two people are seeking each others
+        """
         wanting = self.seeking == Identification.ANY or self.seeking == other.gender
         other_wanting = other.seeking == Identification.ANY or other.seeking == self.gender
-        gender_preference = wanting and other_wanting
+        return wanting and other_wanting
 
-
-        day_preference = self.day_choice == other.day_choice or self.day_choice == "Either" or other.day_choice == "Either"
-
-        return day_preference and gender_preference
-        # return gender_preference
+    def _day_preference_constraint(self, other:'Person')->bool:
+        """
+        Returns True if the two people can meet on the same day
+        """
+        return self.day_choice == other.day_choice or self.day_choice == "Either" or other.day_choice == "Either"
