@@ -19,6 +19,8 @@ class MatchMaker:
         for index, row in rows.iterrows():
             person = Person.build(row)
             self.persons.append(person)
+            print(index, person)
+
 
         logging.info(f"Registered {len(self.persons)} persons for matching.")
 
@@ -31,7 +33,10 @@ class MatchMaker:
         # Scoring function
         score_vars = []
         for variable, person1, person2 in self.match_tracker.get_variables_to_people():
-            score_vars.append(variable * person1.matrix_similarity(person2))
+            reward = person1.matrix_similarity(person2)
+            penalty = 1 - person1.is_pairing_preferred(person2) # positive penalty
+            score = reward - (0.1* penalty)
+            score_vars.append(variable * score)
         self.prob += lpSum(score_vars)
 
         # Ensure that each person is matched with one other person
