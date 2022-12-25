@@ -6,8 +6,11 @@ import numpy as np
 from functools import partial
 from scipy.spatial.distance import cosine
 
+class StrRepr:
+    def __repr__(self):
+        return self.value
 
-class Identity(Enum):
+class Identity(StrRepr, Enum):
     MAN = "MAN"
     WOMAN = "WOMAN"
     ANY = "ANY"
@@ -29,11 +32,7 @@ class Identity(Enum):
 
         return cls.UNDEFINED
 
-    def __str__(self):
-        return self.value
-
-
-class Year(Enum):
+class Year(StrRepr, Enum):
     FIRST = "1st Year"
     SECOND = "2nd Year"
     THIRD = "3rd Year"
@@ -45,7 +44,7 @@ class Year(Enum):
         return cls(s)
 
 
-class YearPreference(Enum):
+class YearPreference(StrRepr, Enum):
     ANY = "ANY"
     SAME = "SAME"
     DIFFERENT = "DIFFERENT"
