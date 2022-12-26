@@ -1,13 +1,16 @@
+import logging
 from collections import defaultdict
-import pandas as pd
+from functools import lru_cache
+from typing import Dict, List, Set, Tuple
+
 import matplotlib.pyplot as plt
 import numpy as np
-from person import Person
+import pandas as pd
 from pulp import *
-import logging
-from functools import lru_cache
-from typing import List, Tuple, Dict, Set
+from date_matching.matching.matchtracker import MatchTracker
 
+from date_matching.person import Person
+from date_matching.config import PROBLEM_NAME, LOG_LP_FILE_PATH
 
 class MatchMaker:
     def __init__(self, rows) -> None:
@@ -28,7 +31,7 @@ class MatchMaker:
         self.match_tracker = MatchTracker(self.persons)
 
     def _initialse_problem(self):
-        self.prob = LpProblem("Date_Pairing_Problem", LpMaximize)
+        self.prob = LpProblem(f"{PROBLEM_NAME}_problem".title(), LpMaximize)
 
         # Scoring function
         score_vars = []
@@ -48,7 +51,7 @@ class MatchMaker:
         for variable, person1, person2 in self.match_tracker.get_variables_to_people():
             self.prob += variable <= person1.is_pairable(person2)
 
-        self.prob.writeLP("DatingModel.lp")
+        self.prob.writeLP(LOG_LP_FILE_PATH)
 
     def solve(self):
         self.prob.solve(solver=PULP_CBC_CMD(msg=False))
@@ -88,7 +91,7 @@ class MatchMaker:
                 )
 
         for k, matches in day_dict.items():
-            print(f"------{k}------")
+            print(f"------ {k} ------ [{len(matches)} pairs]")
             for idx1, idx2 in matches:
                 print(f"{idx1} - {idx2}")
             print()
@@ -110,36 +113,3 @@ class MatchMaker:
             print(f"{k}: {v}")
 
 
-# # Class that stores possible matches and actual matches
-class MatchTracker:
-    def __init__(self, persons):
-        self.persons = persons
-        self.possible_matches = [tuple(c) for c in allcombinations(range(len(self.persons)), k=2) if len(set(c)) == 2]
-        self.possible_matches += [(idx, idx) for idx in range(len(self.persons))]
-        self.variables = LpVariable.dicts("match", self.possible_matches, lowBound=0, upBound=1, cat=LpInteger)
-
-    def get_variables_for_person(self, idx) -> List[LpVariable]:
-        return [self.variables[possible_match] for possible_match in self.possible_matches if idx in possible_match]
-
-    # return list of variables and both people that represent this variable
-    def get_variables_to_people(self) -> List[Tuple[LpVariable, Person, Person]]:
-        return [
-            (self.variables[possible_match], self.persons[possible_match[0]], self.persons[possible_match[1]])
-            for possible_match in self.possible_matches
-        ]
-
-    # get variables which are set to True
-    def get_true_variables(self) -> List[LpVariable]:
-        return [self.variables[possible_match] for possible_match in self.get_true_possible_matches()]
-
-    # return list of pairs of persons that are matched
-    def get_matches(self) -> List[Tuple[Person, Person]]:
-        return [
-            (self.persons[possible_match[0]], self.persons[possible_match[1]])
-            for possible_match in self.get_true_possible_matches()
-        ]
-
-    def get_true_possible_matches(self) -> List[Tuple[int, int]]:
-        return [
-            possible_match for possible_match in self.possible_matches if self.variables[possible_match].varValue > 0
-        ]
