@@ -5,6 +5,7 @@ class StrRepr:
     def __repr__(self):
         return self.value
 
+
 class Identity(StrRepr, Enum):
     MAN = "MAN"
     WOMAN = "WOMAN"
@@ -26,6 +27,7 @@ class Identity(StrRepr, Enum):
                 return gender_enum
 
         return cls.UNDEFINED
+
 
 class Year(StrRepr, Enum):
     FIRST = "1st Year"

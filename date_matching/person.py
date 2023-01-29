@@ -28,12 +28,23 @@ class Person:
         seeking = Identity.from_string(row["I am interested in..."])
         which_day = row["Which day would you prefer the date to be on?"]
         year = Year.from_string(row["Which year are you in?"])
-        year_preference = YearPreference.from_string(row["I would like to go on a date with someone who is..."])
+        year_preference = YearPreference.from_string(
+            row["I would like to go on a date with someone who is..."]
+        )
 
         # identify columns that are of type float64
         matrix_cols = {k: v for k, v in row.items() if isinstance(v, float)}
 
-        return cls(name, student_id, gender, seeking, matrix_cols, which_day, year, year_preference)
+        return cls(
+            name,
+            student_id,
+            gender,
+            seeking,
+            matrix_cols,
+            which_day,
+            year,
+            year_preference,
+        )
 
     def compatibility_score(self, other: "Person") -> float:
         """
@@ -113,7 +124,11 @@ class Person:
         """
         Returns True if the two people can meet on the same day
         """
-        return self.day_choice == other.day_choice or self.day_choice == "Either" or other.day_choice == "Either"
+        return (
+            self.day_choice == other.day_choice
+            or self.day_choice == "Either"
+            or other.day_choice == "Either"
+        )
 
     def _evaluate_constraints(self, constraints):
         return lambda other: all([constraint(other) for constraint in constraints])

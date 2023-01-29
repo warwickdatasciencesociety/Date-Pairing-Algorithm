@@ -192,3 +192,8 @@ poetry.toml
 
 temp
 .vscode
+
+
+*.html
+*.ipynb
+notes.md
