@@ -1,15 +1,11 @@
-from dataclasses import asdict, dataclass, field
-from enum import Enum
-from functools import partial
+from dataclasses import dataclass, field
 from typing import Dict, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
 from scipy.spatial.distance import cosine
 
-# from enum_classes import Identity, Year, YearPreference
 from date_matching.enum_classes import Identity, Year, YearPreference
-
 
 
 @dataclass
@@ -39,9 +35,9 @@ class Person:
 
         return cls(name, student_id, gender, seeking, matrix_cols, which_day, year, year_preference)
 
-    def matrix_similarity(self, other: "Person") -> float:
+    def compatibility_score(self, other: "Person") -> float:
         """
-        Returns the similarity between the two people based on their matrix
+        Returns score between the two people based on their matrix
         """
         if self == other:
             return 0.0
@@ -107,7 +103,7 @@ class Person:
 
     def _gender_seeking_constraint(self, other: "Person") -> bool:
         """
-        Returns True if the two people are seeking each others
+        Returns True if the two people are seeking each others' gender
         """
         wanting = self.seeking == Identity.ANY or self.seeking == other.gender
         other_wanting = other.seeking == Identity.ANY or other.seeking == self.gender
