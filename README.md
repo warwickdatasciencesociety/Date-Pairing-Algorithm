@@ -12,6 +12,7 @@ This is not meant to be a cli tool, but rather a framework that can be used to i
 pip install -r requirements.txt
 python3 main.py
 ```
+*Tested on Python Python 3.9.0*
 
 This will execute the pairing on the example input file and output the results to the console.
 
