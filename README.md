@@ -8,7 +8,12 @@ This repository contains the implementation of the algorithm, as an extendible f
 ## How to use
 This is not meant to be a cli tool, but rather a framework that can be used to implement a cli tool if needed. The main.py file contains an example of how to use the algorithm.
 
-`python3 main.py` will execute the pairing on the example input file and output the results to the console.
+```python
+pip install -r requirements.txt
+python3 main.py
+```
+
+This will execute the pairing on the example input file and output the results to the console.
 
 
 ## How to customize
