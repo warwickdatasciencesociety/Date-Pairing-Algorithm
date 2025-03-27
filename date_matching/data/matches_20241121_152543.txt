@@ -1,0 +1,22 @@
+=== MATCHES ===
+
+=== BY DAY ===
+
+Friday, 22nd Nov:
+u2232283 - u5590940 (Compatibility: 96.02%)
+u5559177 - u5564946 (Compatibility: 96.10%)
+u2261809 - u2236351 (Compatibility: 92.68%)
+u5502157 - u5528446 (Compatibility: 93.39%)
+u5506741 - u5588723 (Compatibility: 92.76%)
+u5636348 - u5508762 (Compatibility: 96.27%)
+
+Thursday, 21st Nov:
+u5566405 - u5596859 (Compatibility: 95.78%)
+u2211040 - u2259998 (Compatibility: 94.45%)
+u5508201 - u5544410 (Compatibility: 94.12%)
+u5601151 - u5634550 (Compatibility: 92.27%)
+u5613167 - u2208314 (Compatibility: 95.86%)
+
+=== GENDER PAIRINGS ===
+Man/Woman: 10
+Woman/Woman: 1
